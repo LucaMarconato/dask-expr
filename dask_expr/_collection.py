@@ -344,16 +344,6 @@ class FrameBase(DaskMethodsMixin):
         """Return number of partitions"""
         return self.expr.npartitions
 
-    # luca
-    @property
-    @derived_from(pd.DataFrame)
-    def attrs(self):
-        return self._meta.attrs
-
-    @attrs.setter
-    def attrs(self, value):
-        self._meta.attrs = dict(value)
-
     @property
     def dtypes(self):
         """Return data types"""
@@ -598,7 +588,11 @@ Expr={expr}"""
             The optimized Dask Dataframe
         """
         nc = new_collection(self.expr.optimize(fuse=fuse))
-        nc.attrs = self.attrs
+        if hasattr(nc, "attrs"):
+            # without the next line:
+            # - test_attrs_dataframe_optimize fails
+            # - test_attrs_series_optimize works anyway
+            nc.attrs = self.attrs
         return nc
 
     @property
@@ -2999,6 +2993,15 @@ class DataFrame(FrameBase):
             **kwargs,
         )
 
+    @property
+    @derived_from(pd.DataFrame)
+    def attrs(self):
+        return self._meta.attrs
+
+    @attrs.setter
+    def attrs(self, value):
+        self._meta.attrs = dict(value)
+
     def __setitem__(self, key, value):
         if isinstance(key, (tuple, list)) and isinstance(value, DataFrame):
             out = self.assign(**{k: value[c] for k, c in zip(key, value.columns)})
@@ -4412,6 +4415,15 @@ class Series(FrameBase):
         from dask_expr._groupby import SeriesGroupBy
 
         return SeriesGroupBy(self, by, **kwargs)
+
+    @property
+    @derived_from(pd.Series)
+    def attrs(self):
+        return self._meta.attrs
+
+    @attrs.setter
+    def attrs(self, value):
+        self._meta.attrs = dict(value)
 
     def rename(self, index, sorted_index=False):
         """Alter Series index labels or name

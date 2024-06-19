@@ -149,8 +149,9 @@ class _BackendData:
     def _token(self):
         from dask_expr._util import _tokenize_deterministic
 
-        # luca
-        # return _tokenize_deterministic(self._data)
+        # without considering self._data.attrs the following tests fail:
+        # - test_attrs_dataframe_not_shared_across_instances
+        # - test_attrs_series_not_shared_across_instances
         return _tokenize_deterministic((self._data, self._data.attrs))
 
     def __len__(self):

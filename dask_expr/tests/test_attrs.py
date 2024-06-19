@@ -2,8 +2,6 @@ import dask.dataframe as dd
 import pandas as pd
 
 
-# luca
-# @pytest.mark.skipif(DASK_EXPR_ENABLED, reason="not important now")
 def test_attrs_dataframe():
     df = pd.DataFrame({"A": [1, 2], "B": [3, 4], "C": [5, 6]})
     df.attrs = {"date": "2020-10-16"}
@@ -14,8 +12,6 @@ def test_attrs_dataframe():
     assert df.attrs == ddf.compute().attrs
 
 
-# luca
-# @pytest.mark.skipif(DASK_EXPR_ENABLED, reason="not important now")
 def test_attrs_series():
     s = pd.Series([1, 2], name="A")
     s.attrs["unit"] = "kg"
