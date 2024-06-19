@@ -149,7 +149,9 @@ class _BackendData:
     def _token(self):
         from dask_expr._util import _tokenize_deterministic
 
-        return _tokenize_deterministic(self._data)
+        # luca
+        # return _tokenize_deterministic(self._data)
+        return _tokenize_deterministic((self._data, self._data.attrs))
 
     def __len__(self):
         return len(self._data)

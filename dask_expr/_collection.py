@@ -344,6 +344,16 @@ class FrameBase(DaskMethodsMixin):
         """Return number of partitions"""
         return self.expr.npartitions
 
+    # luca
+    @property
+    @derived_from(pd.DataFrame)
+    def attrs(self):
+        return self._meta.attrs
+
+    @attrs.setter
+    def attrs(self, value):
+        self._meta.attrs = dict(value)
+
     @property
     def dtypes(self):
         """Return data types"""
@@ -587,7 +597,9 @@ Expr={expr}"""
         -------
             The optimized Dask Dataframe
         """
-        return new_collection(self.expr.optimize(fuse=fuse))
+        nc = new_collection(self.expr.optimize(fuse=fuse))
+        nc.attrs = self.attrs
+        return nc
 
     @property
     def dask(self):
